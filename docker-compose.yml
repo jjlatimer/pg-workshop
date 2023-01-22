@@ -10,7 +10,7 @@ services:
       - 5432:5432
     volumes:
       - postgres:/var/lib/postgresql/data
-    env_file: postgres.env
+        #env_file: postgres.env
     environment:
       - POSTGRES_PORT=5432
 
@@ -33,7 +33,7 @@ services:
     image: tooljet/tooljet-ce:latest
     container_name: workshop-tooljet
     restart: always
-    env_file: tooljet.env
+    #env_file: tooljet.env
     ports:
       - 8082:80
     depends_on:
