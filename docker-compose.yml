@@ -1,31 +1,55 @@
-version: "3.1"
+version: '3'
 
 services:
-
-  db:
+  postgres:
+    image: postgres:13
+    container_name: workshop-postgres
     restart: always
-    image: postgres
-    container_name: workshop-db
-    environment:
-      - POSTGRES_USER=demo
-      - POSTGRES_PASSWORD=demo
-      - POSTGRES_DB=demo
-      - POSTGRES_PORT=5432
+    # must this be open?
+    ports:
+      - 5432:5432
     volumes:
-      - postgres_data:/var/lib/postgresql/data/
+      - postgres:/var/lib/postgresql/data
+    env_file: postgres.env
+    environment:
+      - POSTGRES_PORT=5432
 
-  pgadmin:
-      image: dpage/pgadmin4
-      container_name: workshop-pgadmin
-      depends_on:
-        - db
-      ports:
-        - "5051:80"
-      environment:
-        PGADMIN_DEFAULT_EMAIL: pgadmin4@pgadmin.org
-        PGADMIN_DEFAULT_PASSWORD: root
-      restart: always
+   pgadmin:
+    image: dpage/pgadmin4
+    container_name: workshop-pgadmin
+    depends_on:
+      - postgres
+    ports:
+      - 5051:80
+    environment:
+      PGADMIN_DEFAULT_EMAIL: pgadmin4@pgadmin.org
+      PGADMIN_DEFAULT_PASSWORD: root
+    restart: always
+    command: npm run start:prod
 
+  tooljet:
+    tty: true
+    stdin_open: true
+    image: tooljet/tooljet-ce:latest
+    container_name: workshop-tooljet
+    restart: always
+    env_file: tooljet.env
+    ports:
+      - 8082:80
+    depends_on:
+      - postgres
+    environment:
+      SERVE_CLIENT: "true"
+      PORT: "80"
+    command: npm run start:prod
 
 volumes:
-  postgres_data:
+  postgres:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${PWD}/postgres_data
+  certs:
+  logs:
+  fallbackcerts:
