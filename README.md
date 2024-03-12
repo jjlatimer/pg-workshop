@@ -7,7 +7,7 @@ version: "3.1"
 
 services:
 
-  db:
+  postgres:
     restart: always
     image: postgres
     container_name: demo-postgres #you can change this
@@ -25,7 +25,7 @@ services:
       image: dpage/pgadmin4
       container_name: demo-pgadmin #you can change this
       depends_on:
-        - db
+        - postgres
       ports:
         - "5051:80"
       environment:
